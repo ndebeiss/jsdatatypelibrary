@@ -76,17 +76,17 @@
             var name = datatypeNode.getAttribute("name");
             var validNodes = datatypeNode.getElementsByTagName("valid");
             for (var j = 0 ; j < validNodes.length ; j++) {
-                var value = data_of(validNodes.item(j).childNodes.item(0));
+                var value = textContent(validNodes.item(j));
                 datatypeAllows_true(name, value);
             }
 			var valueNodes = datatypeNode.getElementsByTagName("value");
             for (var j = 0 ; j < valueNodes.length ; j++) {
-                var value = data_of(valueNodes.item(j).childNodes.item(0));
+                var value = textContent(valueNodes.item(j));
                 datatypeAllows_true(name, value);
             }
             var inValidNodes = datatypeNode.getElementsByTagName("invalid");
             for (var j = 0 ; j < inValidNodes.length ; j++) {
-                var value = data_of(inValidNodes.item(j).childNodes.item(0));
+                var value = textContent(inValidNodes.item(j));
                 datatypeAllows_false(name, value);
             }
         }
