@@ -347,13 +347,13 @@ STUV WXYZ 0123 4567 89+/</valid>
 		<equiv>
 			<class>
 				<value>deadbeef</value>
-				<value>d&#xA;&#xD;&#x9;e a d
-b eef </value>
+				<!-- <value>d&#xA;&#xD;&#x9;e a d
+b eef </value> -->
 			</class>
 			<class>
 				<value>DEADBEEF</value>
-				<value>D&#xA;&#xD;&#x9;E A D
-B EEF </value>
+				<!-- <value>D&#xA;&#xD;&#x9;E A D
+B EEF </value> -->
 			</class>
 		</equiv>
 		<length value="0"/>
