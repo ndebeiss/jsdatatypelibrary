@@ -90,10 +90,10 @@ anyURI  	 															does not do any validation
 base64Binary 	 														OK
 boolean 	 															OK
 double 	 															OK
-float 	 
+float 	                                                                                                                                                                            same as double
 hexBinary 	 															OK
-NOTATION 	 
-QName 	 
+NOTATION 	                                                                                                                                                     same as QName 
+QName 	                                                                                                                                                                OK
 
 extract from http://www.w3schools.com/Schema/schema_elements_ref.asp :
 
@@ -114,10 +114,8 @@ whiteSpace 	Specifies how white space (line feeds, tabs, spaces, and carriage re
 function DatatypeLibrary() {
 
     var languageRegExp = new RegExp("^[a-zA-Z]{1,8}(-[a-zA-Z0-9]{1,8})*$");
-    //http://www.w3.org/TR/xml/#NT-Name
-    var nameStartChar = "A-Z_a-z\\hC0-\\hD6\\hD8-\\hF6\\hF8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD";
-    //\\u10000-\\uEFFFF
-    var nameChar = nameStartChar + "\-\\.0-9\\hB7\\u0300-\\u036F\\u203F-\\u2040";
+    var nameStartChar = "A-Z_a-z";
+    var nameChar = nameStartChar + "\-\\.0-9";
     var nameRegExp = new RegExp("^[:" + nameStartChar + "][:" + nameChar + "]*$");
     var ncNameRegExp = new RegExp("^[" + nameStartChar + "][" + nameChar + "]*$");
 
@@ -227,8 +225,12 @@ B64         ::=  [A-Za-z0-9+/]
                 return this.checkRegExp(ncNameRegExp, string, datatype);
             } else if (datatype.localName == "normalizedString") {
                 return this.checkRegExp(normalizedStringRegExp, string, datatype);
-            } else if (datatype.localName == "QName") {
-                return this.checkRegExp(qNameRegExp, string, datatype);
+            } else if (datatype.localName == "QName" || datatype.localName == "NOTATION") {
+                var result = this.checkRegExp(qNameRegExp, string, datatype);
+                if (result instanceof NotAllowed) {
+                    return result;
+                }
+                return checkPrefixDeclared(string, context, datatype);
             } else if (datatype.localName == "string") {
                 return new Empty();
             } else if (datatype.localName == "token") {
@@ -287,6 +289,8 @@ B64         ::=  [A-Za-z0-9+/]
                 return this.checkRegExp(booleanRegExp, string, datatype);
             } else if (datatype.localName == "double") {
                 return this.checkRegExp(doubleRegExp, string, datatype);
+            } else if (datatype.localName == "float") {
+                return this.checkRegExp(doubleRegExp, string, datatype);
             } else if (datatype.localName == "hexBinary") {
                 return this.checkRegExp(hexBinaryRegExp, string, datatype);
             } else {
@@ -341,6 +345,16 @@ B64         ::=  [A-Za-z0-9+/]
             }
             return new NotAllowed("invalid integer range, min is " + min + ", max is " + max + " for datatype " + datatype.localName, datatype, string);
         }
+    }
+    
+    this.checkPrefixDeclared = function(string, context, datatype) {
+        if (string.match(":")) {
+            var prefix = string.split(":")[0];
+            if (context.map[prefix] == undefined) {
+                return new NotAllowed("prefix " + prefix + " not declared", datatype, string);
+            }
+        }
+        return new Empty();
     }
     
 }
