@@ -76,22 +76,39 @@
             var name = datatypeNode.getAttribute("name");
             var validNodes = datatypeNode.getElementsByTagName("valid");
             for (var j = 0 ; j < validNodes.length ; j++) {
-                var value = textContent(validNodes.item(j));
+                var validNode = validNodes.item(j);
+                var nodeAtts = validNode.attributes;
+                addNamespacesDecl(nodeAtts);
+                var value = textContent(validNode);
                 datatypeAllows_true(name, value);
             }
 			var valueNodes = datatypeNode.getElementsByTagName("value");
             for (var j = 0 ; j < valueNodes.length ; j++) {
-                var value = textContent(valueNodes.item(j));
+                var valueNode = valueNodes.item(j);
+                var nodeAtts = valueNode.attributes;
+                addNamespacesDecl(nodeAtts);
+                var value = textContent(valueNode);
                 datatypeAllows_true(name, value);
             }
             var inValidNodes = datatypeNode.getElementsByTagName("invalid");
             for (var j = 0 ; j < inValidNodes.length ; j++) {
-                var value = textContent(inValidNodes.item(j));
+                var inValidNode = inValidNodes.item(j);
+                var nodeAtts = inValidNode.attributes;
+                addNamespacesDecl(nodeAtts);
+                var value = textContent(inValidNode);
                 datatypeAllows_false(name, value);
             }
         }
 	}
     
+    function addNamespacesDecl(nodeAtts) {
+        for (var i = 0 ; i < nodeAtts.length ; i++) {
+            if (nodeAtts[i].nodeName.match('xmlns')) {
+                var prefix = nodeAtts[i].localName.replace(/^xmlns$/, "");
+                map[prefix] = nodeAtts[i].value;
+            }
+        }
+    }
     
 
     </script>
