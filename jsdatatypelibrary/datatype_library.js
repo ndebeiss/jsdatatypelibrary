@@ -98,17 +98,17 @@ QName 	                                                                         
 extract from http://www.w3schools.com/Schema/schema_elements_ref.asp :
 
 enumeration  	Defines a list of acceptable values
-fractionDigits 	Specifies the maximum number of decimal places allowed. Must be equal to or greater than zero
-length 	Specifies the exact number of characters or list items allowed. Must be equal to or greater than zero
-maxExclusive 	Specifies the upper bounds for numeric values (the value must be less than this value)
-maxInclusive 	Specifies the upper bounds for numeric values (the value must be less than or equal to this value)
-maxLength 	Specifies the maximum number of characters or list items allowed. Must be equal to or greater than zero
-minExclusive 	Specifies the lower bounds for numeric values (the value must be greater than this value)
-minInclusive 	Specifies the lower bounds for numeric values (the value must be greater than or equal to this value)
-minLength 	Specifies the minimum number of characters or list items allowed. Must be equal to or greater than zero
-pattern 	Defines the exact sequence of characters that are acceptable
-totalDigits 	Specifies the exact number of digits allowed. Must be greater than zero
-whiteSpace 	Specifies how white space (line feeds, tabs, spaces, and carriage returns) is handled
+fractionDigits 	Specifies the maximum number of decimal places allowed. Must be equal to or greater than zero                OK
+length 	Specifies the exact number of characters or list items allowed. Must be equal to or greater than zero                  OK but not for list and only length of string
+maxExclusive 	Specifies the upper bounds for numeric values (the value must be less than this value)                                  OK
+maxInclusive 	Specifies the upper bounds for numeric values (the value must be less than or equal to this value)              OK
+maxLength 	Specifies the maximum number of characters or list items allowed. Must be equal to or greater than zero             OK
+minExclusive 	Specifies the lower bounds for numeric values (the value must be greater than this value)                            OK
+minInclusive 	Specifies the lower bounds for numeric values (the value must be greater than or equal to this value)           OK
+minLength 	Specifies the minimum number of characters or list items allowed. Must be equal to or greater than zero                 OK
+pattern 	Defines the exact sequence of characters that are acceptable                                                                                    OK
+totalDigits 	Specifies the exact number of digits allowed. Must be greater than zero                                                                   OK
+whiteSpace 	Specifies how white space (line feeds, tabs, spaces, and carriage returns) is handled                                   KO
 
 */
 function DatatypeLibrary() {
@@ -210,6 +210,8 @@ B64         ::=  [A-Za-z0-9+/]
     
     var hexBinaryRegExp = new RegExp("^ *" + "[0-9a-fA-F]+" + " *$");
     
+    var fractionDigits = "\\.[0-9]";
+    
     /*
     datatypeAllows :: Datatype -> ParamList -> String -> Context -> Bool
     datatypeAllows ("",  "string") [] _ _ = True
@@ -218,15 +220,15 @@ B64         ::=  [A-Za-z0-9+/]
     this.datatypeAllows = function(datatype, paramList, string, context) {
         if (datatype.uri == "http://www.w3.org/2001/XMLSchema-datatypes") {
             if (datatype.localName == "language") {
-                return this.checkRegExp(languageRegExp, string, datatype);
+                return this.checkRegExpAndParams(languageRegExp, string, datatype, paramList);
             } else if (datatype.localName == "Name") {
-                return this.checkRegExp(nameRegExp, string, datatype);
+                return this.checkRegExpAndParams(nameRegExp, string, datatype, paramList);
             } else if (datatype.localName == "NCName") {
-                return this.checkRegExp(ncNameRegExp, string, datatype);
+                return this.checkRegExpAndParams(ncNameRegExp, string, datatype, paramList);
             } else if (datatype.localName == "normalizedString") {
-                return this.checkRegExp(normalizedStringRegExp, string, datatype);
+                return this.checkRegExpAndParams(normalizedStringRegExp, string, datatype, paramList);
             } else if (datatype.localName == "QName" || datatype.localName == "NOTATION") {
-                var result = this.checkRegExp(qNameRegExp, string, datatype);
+                var result = this.checkRegExpAndParams(qNameRegExp, string, datatype, paramList);
                 if (result instanceof NotAllowed) {
                     return result;
                 }
@@ -234,65 +236,65 @@ B64         ::=  [A-Za-z0-9+/]
             } else if (datatype.localName == "string") {
                 return new Empty();
             } else if (datatype.localName == "token") {
-                return this.checkRegExp(tokenRegExp, string, datatype);
+                return this.checkRegExpAndParams(tokenRegExp, string, datatype, paramList);
             } else if (datatype.localName == "date") {
-                return this.checkRegExp(dateRegExp, string, datatype);
+                return this.checkRegExpAndParams(dateRegExp, string, datatype, paramList);
             } else if (datatype.localName == "dateTime") {
-                return this.checkRegExp(dateTimeRegExp, string, datatype);
+                return this.checkRegExpAndParams(dateTimeRegExp, string, datatype, paramList);
             } else if (datatype.localName == "duration") {
-                return this.checkRegExp(durationRegExp, string, datatype);
+                return this.checkRegExpAndParams(durationRegExp, string, datatype, paramList);
             } else if (datatype.localName == "gDay") {
-                return this.checkRegExp(gDayRegExp, string, datatype);
+                return this.checkRegExpAndParams(gDayRegExp, string, datatype, paramList);
             } else if (datatype.localName == "gMonth") {
-                return this.checkRegExp(gMonthRegExp, string, datatype);
+                return this.checkRegExpAndParams(gMonthRegExp, string, datatype, paramList);
             } else if (datatype.localName == "gMonthDay") {
-                return this.checkRegExp(gMonthDayRegExp, string, datatype);
+                return this.checkRegExpAndParams(gMonthDayRegExp, string, datatype, paramList);
             } else if (datatype.localName == "gYear") {
-                return this.checkRegExp(gYearRegExp, string, datatype);
+                return this.checkRegExpAndParams(gYearRegExp, string, datatype, paramList);
             } else if (datatype.localName == "gYearMonth") {
-                return this.checkRegExp(gYearMonthRegExp, string, datatype);
+                return this.checkRegExpAndParams(gYearMonthRegExp, string, datatype, paramList);
             } else if (datatype.localName == "time") {
-                return this.checkRegExp(timeRegExp, string, datatype);
+                return this.checkRegExpAndParams(timeRegExp, string, datatype, paramList);
             } else if (datatype.localName == "byte") {
-                return this.checkIntegerRange(BYTE_MIN, BYTE_MAX, string, datatype);
+                return this.checkIntegerRange(BYTE_MIN, BYTE_MAX, string, datatype, paramList);
             } else if (datatype.localName == "decimal") {
-                return this.checkRegExp(decimalRegExp, string, datatype);
+                return this.checkRegExpAndParams(decimalRegExp, string, datatype, paramList);
             } else if (datatype.localName == "int") {
-                return this.checkIntegerRange(INT_MIN, INT_MAX, string, datatype);
+                return this.checkIntegerRange(INT_MIN, INT_MAX, string, datatype, paramList);
             } else if (datatype.localName == "integer") {
-                return this.checkRegExp(integerRegExp, string, datatype);
+                return this.checkRegExpAndParams(integerRegExp, string, datatype, paramList);
             } else if (datatype.localName == "long") {
-                return this.checkIntegerRange(LONG_MIN, LONG_MAX, string, datatype);
+                return this.checkIntegerRange(LONG_MIN, LONG_MAX, string, datatype, paramList);
             } else if (datatype.localName == "negativeInteger") {
-                return this.checkRegExp(negativeIntegerRegExp, string, datatype);
+                return this.checkRegExpAndParams(negativeIntegerRegExp, string, datatype, paramList);
             } else if (datatype.localName == "nonNegativeInteger") {
-                return this.checkRegExp(nonNegativeIntegerRegExp, string, datatype);
+                return this.checkRegExpAndParams(nonNegativeIntegerRegExp, string, datatype, paramList);
             } else if (datatype.localName == "nonPositiveInteger") {
-                return this.checkRegExp(nonPositiveIntegerRegExp, string, datatype);
+                return this.checkRegExpAndParams(nonPositiveIntegerRegExp, string, datatype, paramList);
             } else if (datatype.localName == "positiveInteger") {
-                return this.checkRegExp(positiveIntegerRegExp, string, datatype);
+                return this.checkRegExpAndParams(positiveIntegerRegExp, string, datatype, paramList);
             } else if (datatype.localName == "short") {
-                return this.checkIntegerRange(SHORT_MIN, SHORT_MAX, string, datatype);
+                return this.checkIntegerRange(SHORT_MIN, SHORT_MAX, string, datatype, paramList);
             } else if (datatype.localName == "unsignedLong") {
-                return this.checkIntegerRange(0, UNSIGNED_LONG_MAX, string, datatype);
+                return this.checkIntegerRange(0, UNSIGNED_LONG_MAX, string, datatype, paramList);
             } else if (datatype.localName == "unsignedInt") {
-                return this.checkIntegerRange(0, UNSIGNED_INT_MAX, string, datatype);
+                return this.checkIntegerRange(0, UNSIGNED_INT_MAX, string, datatype, paramList);
             } else if (datatype.localName == "unsignedShort") {
-                return this.checkIntegerRange(0, UNSIGNED_SHORT_MAX, string, datatype);
+                return this.checkIntegerRange(0, UNSIGNED_SHORT_MAX, string, datatype, paramList);
             } else if (datatype.localName == "unsignedByte") {
-                return this.checkIntegerRange(0, UNSIGNED_BYTE_MAX, string, datatype);
+                return this.checkIntegerRange(0, UNSIGNED_BYTE_MAX, string, datatype, paramList);
             } else if (datatype.localName == "anyURI") {
                 return new Empty();
             } else if (datatype.localName == "base64Binary") {
-                return this.checkRegExp(base64BinaryRegExp, string, datatype);
+                return this.checkRegExpAndParams(base64BinaryRegExp, string, datatype, paramList);
             } else if (datatype.localName == "boolean") {
-                return this.checkRegExp(booleanRegExp, string, datatype);
+                return this.checkRegExpAndParams(booleanRegExp, string, datatype, paramList);
             } else if (datatype.localName == "double") {
-                return this.checkRegExp(doubleRegExp, string, datatype);
+                return this.checkRegExpAndParams(doubleRegExp, string, datatype, paramList);
             } else if (datatype.localName == "float") {
-                return this.checkRegExp(doubleRegExp, string, datatype);
+                return this.checkRegExpAndParams(doubleRegExp, string, datatype, paramList);
             } else if (datatype.localName == "hexBinary") {
-                return this.checkRegExp(hexBinaryRegExp, string, datatype);
+                return this.checkRegExpAndParams(hexBinaryRegExp, string, datatype, paramList);
             } else {
                 return new Empty();
             }
@@ -320,6 +322,33 @@ B64         ::=  [A-Za-z0-9+/]
         }
     }
 
+    
+    this.checkRegExpAndParams = function(regExp, string, datatype, paramList) {
+        var check = checkRegExp(regExp, string, datatype);
+        if (check instanceof NotAllowed) {
+            return check;
+        }
+        var enumeration = new Array();
+        for (var i in paramList) {
+            var param = paramList[i];
+            //gathers enumerations before triggering it
+            if (param.localName == "enumeration") {
+                enumeration.push(param);
+            } else {
+                check = checkParam(string, param, datatype);
+                if (check instanceof NotAllowed) {
+                    return check;
+                }
+            }
+        }
+        if (enumeration.length > 0) {
+            check = checkEnumeration(string, enumeration, datatype);
+            if (check instanceof NotAllowed) {
+                return check;
+            }
+        }
+        return new Empty();
+    }
 
     this.checkRegExp = function(regExp, string, datatype) {
         if (regExp.test(string)) {
@@ -328,6 +357,9 @@ B64         ::=  [A-Za-z0-9+/]
         return new NotAllowed("invalid " + datatype.localName, datatype, string);
     }
     
+    /*
+            negation of checkRegExp
+            */
     this.checkExclusiveRegExp = function(regExp, string, datatype) {
         if (regExp.test(string)) {
             return new NotAllowed("invalid " + datatype.localName, datatype, string);
@@ -355,6 +387,97 @@ B64         ::=  [A-Za-z0-9+/]
             }
         }
         return new Empty();
+    }
+    
+    this.checkParam = function(string, param, datatype) {
+        if (param.localName == "fractionDigits") {
+            var number = parseInt(param.string);
+            var regExp = new RegExp(fractionDigits + "{" + number + "}$");
+            var check = this.checkRegExp(regExp, string, datatype);
+            //adds an error message
+            if (check instanceof NotAllowed) {
+                return new NotAllowed("invalid number of fraction digits, expected : " + number, check, string);
+            }
+        } else if (param.localName == "length") {
+            var number = parseInt(param.string);
+            if (number != string.length) {
+                return new NotAllowed("invalid number of characters digits, expected : " + number + ", found : " + string.length, datatype, string);
+            }
+        } else if (param.localName == "maxExclusive") {
+            var number = parseFloat(param.string);
+            var value = parseFloat(string);
+            if (value >= number) {
+                return new NotAllowed("value too big, " + param.localName + " is : " + number + ", found : " + value, datatype, string);
+            }
+        } else if (param.localName == "maxInclusive") {
+            var number = parseFloat(param.string);
+            var value = parseFloat(string);
+            if (value > number) {
+                return new NotAllowed("value too big, " + param.localName + " is : " + number + ", found : " + value, datatype, string);
+            }
+        } else if (param.localName == "maxLength") {
+            var number = parseInt(param.string);
+            if (string.length > number) {
+                return new NotAllowed("string too long, " + param.localName + " is : " + number + ", found : " + string.length, datatype, string);
+            }
+        } else if (param.localName == "minExclusive") {
+            var number = parseFloat(param.string);
+            var value = parseFloat(string);
+            if (value <= number) {
+                return new NotAllowed("value too small, " + param.localName + " is : " + number + ", found : " + value, datatype, string);
+            }
+        } else if (param.localName == "minInclusive") {
+            var number = parseFloat(param.string);
+            var value = parseFloat(string);
+            if (value < number) {
+                return new NotAllowed("value too small, " + param.localName + " is : " + number + ", found : " + value, datatype, string);
+            }
+        } else if (param.localName == "minLength") {
+            var number = parseFloat(param.string);
+            if (string.length < number) {
+                return new NotAllowed("string too small, " + param.localName + " is : " + number + ", found : " + string.length, datatype, string);
+            }
+        } else if (param.localName == "pattern") {
+            var escaped = escapeRegExp(param.string);
+            var regExp = new RegExp("^" + escaped + "$");
+            var check = this.checkRegExp(regExp, string, datatype);
+            //adds an error message
+            if (check instanceof NotAllowed) {
+                return new NotAllowed("value : " + string + " does not respect pattern : " + param.string, check, string);
+            }
+        } else if (param.localName == "totalDigits") {
+            var number = parseInt(param.string);
+            var length = string.replace("/\\./", "").length;
+            if (length != number) {
+                return new NotAllowed("invalid number of digits, " + param.localName + " is : " + number + ", found : " + length, datatype, string);
+            }
+        } else if (param.localName == "totalDigits") {
+            var number = parseInt(param.string);
+            var length = string.replace("/\\./", "").length;
+            if (length != number) {
+                return new NotAllowed("invalid number of digits, " + param.localName + " is : " + number + ", found : " + length, datatype, string);
+            }
+        }
+        return new Empty();
+    }
+    
+    this.checkEnumeration = function(string, enumeration, datatype) {
+        for (var i in enumeration) {
+            var value = enumeration[i];
+            var escaped = escapeRegExp(value);
+            var regExp = new RegExp("^ *" + escaped + " *$");
+            var check = this.checkRegExp(regExp, string, datatype);
+            if (check instanceof Empty) {
+                return check;
+            }
+        }
+        var msg = "invalid value : " + string + ", must be one of : [" + enumeration[0];
+        for (var i = 1 ; i < enumeration.length ; i++) {
+            var value = enumeration[i];
+            msg += "," + value;
+        }
+        msg += "]";
+        return new NotAllowed(msg, datatype, string);
     }
     
 }
