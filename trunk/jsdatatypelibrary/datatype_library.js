@@ -210,7 +210,7 @@ B64         ::=  [A-Za-z0-9+/]
     
     var hexBinaryRegExp = new RegExp("^ *" + "[0-9a-fA-F]+" + " *$");
     
-    var fractionDigits = "\\.[0-9]";
+    var fractionDigits = " *\\.[0-9]";
     
     /*
     datatypeAllows :: Datatype -> ParamList -> String -> Context -> Bool
@@ -232,9 +232,9 @@ B64         ::=  [A-Za-z0-9+/]
                 if (result instanceof NotAllowed) {
                     return result;
                 }
-                return checkPrefixDeclared(string, context, datatype);
+                return this.checkPrefixDeclared(string, context, datatype);
             } else if (datatype.localName == "string") {
-                return new Empty();
+                return this.checkParams(string, datatype, paramList);
             } else if (datatype.localName == "token") {
                 return this.checkRegExpAndParams(tokenRegExp, string, datatype, paramList);
             } else if (datatype.localName == "date") {
@@ -284,7 +284,7 @@ B64         ::=  [A-Za-z0-9+/]
             } else if (datatype.localName == "unsignedByte") {
                 return this.checkIntegerRange(0, UNSIGNED_BYTE_MAX, string, datatype, paramList);
             } else if (datatype.localName == "anyURI") {
-                return new Empty();
+                return this.checkParams(string, datatype, paramList);
             } else if (datatype.localName == "base64Binary") {
                 return this.checkRegExpAndParams(base64BinaryRegExp, string, datatype, paramList);
             } else if (datatype.localName == "boolean") {
@@ -296,12 +296,12 @@ B64         ::=  [A-Za-z0-9+/]
             } else if (datatype.localName == "hexBinary") {
                 return this.checkRegExpAndParams(hexBinaryRegExp, string, datatype, paramList);
             } else {
-                return new Empty();
+                return this.checkParams(string, datatype, paramList);
             }
         } else {
-            return new Empty();
+            return this.checkParams(string, datatype, paramList);
         }
-    }
+    };
 
     /*
     datatypeEqual :: Datatype -> String -> Context -> String -> Context -> Bool
@@ -320,14 +320,18 @@ B64         ::=  [A-Za-z0-9+/]
         } else {
             return datatypeLibrary.datatypeEqual(datatype, string1, context1, string2, context2);
         }
-    }
+    };
 
     
     this.checkRegExpAndParams = function(regExp, string, datatype, paramList) {
-        var check = checkRegExp(regExp, string, datatype);
+        var check = this.checkRegExp(regExp, string, datatype);
         if (check instanceof NotAllowed) {
             return check;
         }
+        return this.checkParams(string, datatype, paramList);
+    };
+    
+    this.checkParams = function(string, datatype, paramList) {
         var enumeration = new Array();
         for (var i in paramList) {
             var param = paramList[i];
@@ -335,27 +339,27 @@ B64         ::=  [A-Za-z0-9+/]
             if (param.localName == "enumeration") {
                 enumeration.push(param);
             } else {
-                check = checkParam(string, param, datatype);
+                check = this.checkParam(string, param, datatype);
                 if (check instanceof NotAllowed) {
                     return check;
                 }
             }
         }
         if (enumeration.length > 0) {
-            check = checkEnumeration(string, enumeration, datatype);
+            check = this.checkEnumeration(string, enumeration, datatype);
             if (check instanceof NotAllowed) {
                 return check;
             }
         }
         return new Empty();
-    }
+    };
 
     this.checkRegExp = function(regExp, string, datatype) {
         if (regExp.test(string)) {
             return new Empty();
         }
         return new NotAllowed("invalid " + datatype.localName, datatype, string);
-    }
+    };
     
     /*
             negation of checkRegExp
@@ -365,7 +369,7 @@ B64         ::=  [A-Za-z0-9+/]
             return new NotAllowed("invalid " + datatype.localName, datatype, string);
         }
         return new Empty();
-    }
+    };
     
     this.checkIntegerRange = function(min, max, string, datatype) {
         if (regExp.test(integerRegExp, string, datatype)) {
@@ -377,7 +381,7 @@ B64         ::=  [A-Za-z0-9+/]
             }
             return new NotAllowed("invalid integer range, min is " + min + ", max is " + max + " for datatype " + datatype.localName, datatype, string);
         }
-    }
+    };
     
     this.checkPrefixDeclared = function(string, context, datatype) {
         if (string.match(":")) {
@@ -387,12 +391,12 @@ B64         ::=  [A-Za-z0-9+/]
             }
         }
         return new Empty();
-    }
+    };
     
     this.checkParam = function(string, param, datatype) {
         if (param.localName == "fractionDigits") {
             var number = parseInt(param.string);
-            var regExp = new RegExp(fractionDigits + "{" + number + "}$");
+            var regExp = new RegExp(fractionDigits + "{" + number + "} *$");
             var check = this.checkRegExp(regExp, string, datatype);
             //adds an error message
             if (check instanceof NotAllowed) {
@@ -400,8 +404,9 @@ B64         ::=  [A-Za-z0-9+/]
             }
         } else if (param.localName == "length") {
             var number = parseInt(param.string);
-            if (number != string.length) {
-                return new NotAllowed("invalid number of characters digits, expected : " + number + ", found : " + string.length, datatype, string);
+            var value = this.trim(string);
+            if (value.length != number) {
+                return new NotAllowed("invalid number of characters digits, expected : " + number + ", found : " + value.length, datatype, string);
             }
         } else if (param.localName == "maxExclusive") {
             var number = parseFloat(param.string);
@@ -417,8 +422,9 @@ B64         ::=  [A-Za-z0-9+/]
             }
         } else if (param.localName == "maxLength") {
             var number = parseInt(param.string);
-            if (string.length > number) {
-                return new NotAllowed("string too long, " + param.localName + " is : " + number + ", found : " + string.length, datatype, string);
+            var value = this.trim(string);
+            if (value.length > number) {
+                return new NotAllowed("string too long, " + param.localName + " is : " + number + ", found : " + value.length, datatype, string);
             }
         } else if (param.localName == "minExclusive") {
             var number = parseFloat(param.string);
@@ -434,12 +440,13 @@ B64         ::=  [A-Za-z0-9+/]
             }
         } else if (param.localName == "minLength") {
             var number = parseFloat(param.string);
-            if (string.length < number) {
-                return new NotAllowed("string too small, " + param.localName + " is : " + number + ", found : " + string.length, datatype, string);
+            var value = this.trim(string);
+            if (value.length < number) {
+                return new NotAllowed("string too small, " + param.localName + " is : " + number + ", found : " + value.length, datatype, string);
             }
         } else if (param.localName == "pattern") {
             var escaped = escapeRegExp(param.string);
-            var regExp = new RegExp("^" + escaped + "$");
+            var regExp = new RegExp("^ *" + escaped + " *$");
             var check = this.checkRegExp(regExp, string, datatype);
             //adds an error message
             if (check instanceof NotAllowed) {
@@ -447,19 +454,14 @@ B64         ::=  [A-Za-z0-9+/]
             }
         } else if (param.localName == "totalDigits") {
             var number = parseInt(param.string);
-            var length = string.replace("/\\./", "").length;
-            if (length != number) {
-                return new NotAllowed("invalid number of digits, " + param.localName + " is : " + number + ", found : " + length, datatype, string);
-            }
-        } else if (param.localName == "totalDigits") {
-            var number = parseInt(param.string);
-            var length = string.replace("/\\./", "").length;
+            var value = this.trim(string);
+            var length = value.replace("/\\./", "").length;
             if (length != number) {
                 return new NotAllowed("invalid number of digits, " + param.localName + " is : " + number + ", found : " + length, datatype, string);
             }
         }
         return new Empty();
-    }
+    };
     
     this.checkEnumeration = function(string, enumeration, datatype) {
         for (var i in enumeration) {
@@ -478,6 +480,17 @@ B64         ::=  [A-Za-z0-9+/]
         }
         msg += "]";
         return new NotAllowed(msg, datatype, string);
-    }
+    };
     
-}
+    this.trim = function(string) {
+        var returned = string.replace(/[\t\n\r ]+/g, " ");
+        if (returned.charAt(0) == " ") {
+            returned = returned.substring(1, returned.length);
+        }
+        if (returned.charAt(returned.length - 1) == " ") {
+            returned = returned.substring(0, returned.length - 1);
+        }
+        return returned;
+    };
+    
+};

@@ -53,6 +53,99 @@
         datatypeAllows_false("QName", "str	ing ");
 	}
     
+    /*
+    tests on parameters
+    */
+    function testDatatypeAllows_enumeration() {
+        paramList.push(new Param("enumeration", "value1"));
+        paramList.push(new Param("enumeration", "value2"));
+        paramList.push(new Param("enumeration", "value3"));
+        datatypeAllows_true("string", "value1");
+        datatypeAllows_true("string", "  value1");
+        datatypeAllows_true("string", "value2");
+        datatypeAllows_true("string", "value2  ");
+        datatypeAllows_true("string", "value3");
+        datatypeAllows_true("string", "  value3  ");
+        datatypeAllows_false("string", "value4");
+        datatypeAllows_false("string", " val ue3");
+        datatypeAllows_false("string", "");
+        datatypeAllows_false("string", "   ");
+    }
+    
+    function testDatatypeAllows_fractionDigits() {
+        paramList.push(new Param("fractionDigits", "3"));
+        datatypeAllows_true("decimal", "1.256");
+        datatypeAllows_true("decimal", "  0.156 ");
+        datatypeAllows_true("decimal", "1537389.156");
+        datatypeAllows_false("decimal", "2.25");
+        datatypeAllows_false("decimal", "  2.25 ");
+        datatypeAllows_false("decimal", "  ");
+        datatypeAllows_false("decimal", "123.12345678");
+    }
+    
+    function testDatatypeAllows_length() {
+        paramList.push(new Param("length", "3"));
+        datatypeAllows_true("string", "abc");
+        datatypeAllows_true("string", "  wer ");
+        datatypeAllows_true("string", "  dju");
+        datatypeAllows_false("string", " 2.25");
+        datatypeAllows_false("string", "   abcd  ");
+        datatypeAllows_false("string", "abcdef");
+        datatypeAllows_false("string", "    ");
+        datatypeAllows_false("string", " ab");
+    }
+    
+    function testDatatypeAllows_maxExclusive() {
+        paramList.push(new Param("maxExclusive", "3.12"));
+        datatypeAllows_true("decimal", "3.11");
+        datatypeAllows_true("decimal", "  2 ");
+        datatypeAllows_true("decimal", "  1.5    ");
+        datatypeAllows_false("decimal", "4.56");
+        datatypeAllows_false("decimal", "   7 ");
+        datatypeAllows_false("decimal", "6.11111");
+        datatypeAllows_false("decimal", "  3.12 ");
+    }
+    
+    function testDatatypeAllows_maxLength() {
+        paramList.push(new Param("maxLength", "4"));
+        datatypeAllows_true("string", "abc");
+        datatypeAllows_true("string", "  we ");
+        datatypeAllows_true("string", "    ");
+        datatypeAllows_true("string", "  abcd  ");
+        datatypeAllows_false("string", " abcdef");
+        datatypeAllows_false("string", "   abscsecasc  ");
+    }
+    
+    function testDatatypeAllows_minInclusive() {
+        paramList.push(new Param("minInclusive", "-2.5"));
+        datatypeAllows_true("decimal", "-2.2");
+        datatypeAllows_true("decimal", "  0 ");
+        datatypeAllows_true("decimal", "   +2.56 ");
+        datatypeAllows_true("decimal", "156  ");
+        datatypeAllows_true("decimal", "-2.5");
+        datatypeAllows_false("decimal", " abcdef");
+        datatypeAllows_false("decimal", "  -11.0  ");
+        datatypeAllows_false("decimal", "-25  ");
+    }
+    
+    function testDatatypeAllows_pattern() {
+        paramList.push(new Param("pattern", "[abcd]+"));
+        datatypeAllows_true("string", "bacad");
+        datatypeAllows_true("string", "  cccc");
+        datatypeAllows_true("string", "   addda ");
+        datatypeAllows_false("string", " abcde");
+        datatypeAllows_false("string", "eee  ");
+    }
+    
+    function testDatatypeAllows_totalDigits() {
+        paramList.push(new Param("totalDigits", "4"));
+        datatypeAllows_true("string", "bacad");
+        datatypeAllows_true("string", "  cccc");
+        datatypeAllows_true("string", "   addda ");
+        datatypeAllows_false("string", " abcde");
+        datatypeAllows_false("string", "eee  ");
+    }
+    
     function datatypeAllows_true(localname, string) {
         var datatype = new Datatype(uri, localname);
         debug("testDatatypeAllows localname [" + localname + "] string [" + string + "]");
