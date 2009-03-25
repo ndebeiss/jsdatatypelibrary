@@ -139,9 +139,9 @@
     
     function testDatatypeAllows_totalDigits() {
         paramList.push(new Param("totalDigits", "4"));
-        datatypeAllows_true("string", "bacad");
+        datatypeAllows_true("string", "baad");
         datatypeAllows_true("string", "  cccc");
-        datatypeAllows_true("string", "   addda ");
+        datatypeAllows_true("string", "   addd ");
         datatypeAllows_false("string", " abcde");
         datatypeAllows_false("string", "eee  ");
     }
