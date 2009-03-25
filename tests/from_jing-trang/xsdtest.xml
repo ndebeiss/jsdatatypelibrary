@@ -314,8 +314,7 @@
 	</datatype>
 	<datatype name="base64Binary">
 		<valid>AAAA</valid>
-		<valid>abcd efgh ijkl mnop qrst uvwx yzAB CDEF GHIJ KLMN OPQR
-STUV WXYZ 0123 4567 89+/</valid>
+		<valid>abcd efgh ijkl mnop qrst uvwx yzAB CDEF GHIJ KLMN OPQR STUV WXYZ 0123 4567 89+/</valid>
 		<valid>BA==</valid>
 		<valid/>
 		<valid>BA==</valid>
