@@ -139,11 +139,11 @@
     
     function testDatatypeAllows_totalDigits() {
         paramList.push(new Param("totalDigits", "4"));
-        datatypeAllows_true("string", "baad");
-        datatypeAllows_true("string", "  cccc");
-        datatypeAllows_true("string", "   addd ");
-        datatypeAllows_false("string", " abcde");
-        datatypeAllows_false("string", "eee  ");
+        datatypeAllows_true("decimal", "0.123");
+        datatypeAllows_true("integer", "  1234");
+        datatypeAllows_true("double", "   12.35 ");
+        datatypeAllows_false("integer", " 12345");
+        datatypeAllows_false("double", "123  ");
     }
     
     function datatypeAllows_true(localname, string) {
