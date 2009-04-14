@@ -8,50 +8,50 @@
     <script language="JavaScript" src="../jsdatatypelibrary/extras.js"></script>
     <script language="JavaScript" src="../jsdatatypelibrary/manageWhiteSpace.js"></script>
     <script language="JavaScript">
-	var datatypeLibrary = new DatatypeLibrary();
+    var datatypeLibrary = new DatatypeLibrary();
 
-	var uri = "http://www.w3.org/2001/XMLSchema-datatypes";
+    var uri = "http://www.w3.org/2001/XMLSchema-datatypes";
     var paramList;
     var map;
     var context;
-	
+    
     function setUp() {
         paramList = new Array();
         map = new Array();
         context = new Context(uri, map);
     }
     
-	function testDatatypeAllows_language() {
+    function testDatatypeAllows_language() {
         datatypeAllows_true("language", "GB");
-	}
+    }
     function testDatatypeAllows_language_false() {
         datatypeAllows_false("language", "1GE");
-	}
+    }
     
     function testDatatypeAllows_Name() {
         datatypeAllows_true("Name", "markup_name");
-	}
+    }
     function testDatatypeAllows_Name_false() {
         datatypeAllows_false("Name", "ma$rkup_name:");
-	}
+    }
     
     function testDatatypeAllows_NCName() {
         datatypeAllows_true("NCName", "markup_name");
-	}
+    }
     function testDatatypeAllows_NCName_false() {
         datatypeAllows_false("NCName", "sfe:markup_name");
-	}
+    }
     
     function testDatatypeAllows_normalizedString() {
         datatypeAllows_true("normalizedString", "string");
-	}
+    }
     
     function testDatatypeAllows_QName() {
         datatypeAllows_true("QName", "string");
-	}
+    }
     function testDatatypeAllows_QName_false() {
         datatypeAllows_false("QName", "str	ing ");
-	}
+    }
     
     /*
     tests on parameters
@@ -61,11 +61,9 @@
         paramList.push(new Param("enumeration", "value2"));
         paramList.push(new Param("enumeration", "value3"));
         datatypeAllows_true("string", "value1");
-        datatypeAllows_true("string", "  value1");
         datatypeAllows_true("string", "value2");
-        datatypeAllows_true("string", "value2  ");
         datatypeAllows_true("string", "value3");
-        datatypeAllows_true("string", "  value3  ");
+        datatypeAllows_false("string", "  value3  ");
         datatypeAllows_false("string", "value4");
         datatypeAllows_false("string", " val ue3");
         datatypeAllows_false("string", "");
@@ -85,6 +83,7 @@
     
     function testDatatypeAllows_length() {
         paramList.push(new Param("length", "3"));
+        paramList.push(new Param("whiteSpace", "collapse"));
         datatypeAllows_true("string", "abc");
         datatypeAllows_true("string", "  wer ");
         datatypeAllows_true("string", "  dju");
@@ -108,6 +107,7 @@
     
     function testDatatypeAllows_maxLength() {
         paramList.push(new Param("maxLength", "4"));
+        paramList.push(new Param("whiteSpace", "collapse"));
         datatypeAllows_true("string", "abc");
         datatypeAllows_true("string", "  we ");
         datatypeAllows_true("string", "    ");
@@ -130,6 +130,7 @@
     
     function testDatatypeAllows_pattern() {
         paramList.push(new Param("pattern", "[abcd]+"));
+        paramList.push(new Param("whiteSpace", "collapse"));
         datatypeAllows_true("string", "bacad");
         datatypeAllows_true("string", "  cccc");
         datatypeAllows_true("string", "   addda ");
@@ -150,20 +151,20 @@
         var datatype = new Datatype(uri, localname);
         debug("testDatatypeAllows localname [" + localname + "] string [" + string + "]");
         inform("testing localname [" + localname + "] with string [" + string + "]");
-		var resultPattern = datatypeLibrary.datatypeAllows(datatype, paramList, string, context);
-		assertTrue("localname [" + localname + "] string [" + string + "]", resultPattern instanceof Empty);
+        var resultPattern = datatypeLibrary.datatypeAllows(datatype, paramList, string, context);
+        assertTrue("localname [" + localname + "] string [" + string + "] result pattern [" + resultPattern + "]", resultPattern instanceof Empty);
     }
     
     function datatypeAllows_false(localname, string) {
         var datatype = new Datatype(uri, localname);
         debug("testDatatypeAllows localname [" + localname + "] string [" + string + "]");
         inform("testing localname [" + localname + "] with string [" + string + "]");
-		var resultPattern = datatypeLibrary.datatypeAllows(datatype, paramList, string, context);
-		assertTrue("localname [" + localname + "] string [" + string + "]", resultPattern instanceof NotAllowed);
+        var resultPattern = datatypeLibrary.datatypeAllows(datatype, paramList, string, context);
+        assertTrue("localname [" + localname + "] string [" + string + "] result pattern [" + resultPattern + "]", resultPattern instanceof NotAllowed);
     }
-	
-	function testDatatypeAllows_from_jing_trang() {
-		var xml_tests = createDocumentFromText(loadFile("from_jing-trang/xsdtest.xml"));
+    
+    function testDatatypeAllows_from_jing_trang() {
+        var xml_tests = createDocumentFromText(loadFile("from_jing-trang/xsdtest.xml"));
         var datatypeNodes = xml_tests.getElementsByTagName("datatype");
         for (var i = 0 ; i < datatypeNodes.length ; i++) {
             var datatypeNode = datatypeNodes.item(i);
@@ -171,35 +172,46 @@
             var validNodes = datatypeNode.getElementsByTagName("valid");
             for (var j = 0 ; j < validNodes.length ; j++) {
                 var validNode = validNodes.item(j);
-                var nodeAtts = validNode.attributes;
-                addNamespacesDecl(nodeAtts);
+                map = new Array();
+                context = new Context(uri, map);
+                setNamespacesDecl(validNode);
                 var value = textContent(validNode);
                 datatypeAllows_true(name, value);
             }
-			var valueNodes = datatypeNode.getElementsByTagName("value");
+            var valueNodes = datatypeNode.getElementsByTagName("value");
             for (var j = 0 ; j < valueNodes.length ; j++) {
                 var valueNode = valueNodes.item(j);
-                var nodeAtts = valueNode.attributes;
-                addNamespacesDecl(nodeAtts);
+                map = new Array();
+                context = new Context(uri, map);
+                setNamespacesDecl(valueNode);
                 var value = textContent(valueNode);
                 datatypeAllows_true(name, value);
             }
             var inValidNodes = datatypeNode.getElementsByTagName("invalid");
             for (var j = 0 ; j < inValidNodes.length ; j++) {
                 var inValidNode = inValidNodes.item(j);
-                var nodeAtts = inValidNode.attributes;
-                addNamespacesDecl(nodeAtts);
+                map = new Array();
+                context = new Context(uri, map);
+                setNamespacesDecl(inValidNode);
                 var value = textContent(inValidNode);
                 datatypeAllows_false(name, value);
             }
         }
-	}
+    }
     
-    function addNamespacesDecl(nodeAtts) {
-        for (var i = 0 ; i < nodeAtts.length ; i++) {
-            if (nodeAtts[i].nodeName.match('xmlns')) {
-                var prefix = nodeAtts[i].localName.replace(/^xmlns$/, "");
-                map[prefix] = nodeAtts[i].value;
+    function setNamespacesDecl(node) {
+        if (node.nodeType == 1) {
+            var nodeAtts = node.attributes;
+            for (var i = 0 ; i < nodeAtts.length ; i++) {
+                var nodeAtt = nodeAtts.item(i);
+                if (nodeAtt.nodeName.match('xmlns')) {
+                    var prefix = nodeAtt.localName.replace(/^xmlns$/, "");
+                    map[prefix] = nodeAtt.value;
+                }
+            }
+            var parentNode = node.parentNode;
+            if (parentNode) {
+                setNamespacesDecl(parentNode);
             }
         }
     }
