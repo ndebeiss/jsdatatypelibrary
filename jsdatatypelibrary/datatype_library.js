@@ -114,8 +114,8 @@ whiteSpace 	Specifies how white space (line feeds, tabs, spaces, and carriage re
 function DatatypeLibrary() {
 
     var languageRegExp = new RegExp("^[a-zA-Z]{1,8}(-[a-zA-Z0-9]{1,8})*$");
-    var nameStartChar = "A-Z_a-z";
-    var nameChar = nameStartChar + "\-\\.0-9";
+    var nameStartChar = "A-Z_a-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF\u0370-\u037D\u037F-\u1FFF\u0200C-\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD\ud800-\udb7f\udc00-\udfff";
+    var nameChar = nameStartChar + "\-\\.0-9\u00B7\u0300-\u036F\u203F-\u2040-";
     var nameRegExp = new RegExp("^[:" + nameStartChar + "][:" + nameChar + "]*$");
     var ncNameRegExp = new RegExp("^[" + nameStartChar + "][" + nameChar + "]*$");
 
@@ -124,7 +124,7 @@ function DatatypeLibrary() {
     
     var qNameRegExp = new RegExp("^[" + nameStartChar + "][" + nameChar + "]*(:[" + nameStartChar + "]+)?$");
     
-    var tokenRegExp = new RegExp("^[^" + whitespaceChar + " ](?!.*  )[^" + whitespaceChar + " ]$");
+    var tokenRegExp = new RegExp("^([^" + whitespaceChar + " ](?!.*  )([^" + whitespaceChar + "]*[^" + whitespaceChar + " ])?)?$");
     
     var year = "-?([1-9][0-9]*)?[0-9]{4}";
     var month = "[0-9]{2}";
