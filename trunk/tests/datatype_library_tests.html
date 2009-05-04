@@ -53,6 +53,19 @@
         datatypeAllows_false("QName", "str	ing ");
     }
     
+    function testDatatypeAllows_token() {
+        datatypeAllows_true("token", "str ing");
+        datatypeAllows_true("token", "s");
+        datatypeAllows_true("token", "");
+        datatypeAllows_true("token", "ab cd defgh");
+        datatypeAllows_false("token", " ab cd defgh");
+        datatypeAllows_false("token", " ab cd defgh ");
+        datatypeAllows_false("token", " ");
+        datatypeAllows_false("token", "  ");
+        datatypeAllows_false("token", "ab cd  defgh");
+        datatypeAllows_false("token", "a  b cddefgh");
+    }
+    
     /*
     tests on parameters
     */
