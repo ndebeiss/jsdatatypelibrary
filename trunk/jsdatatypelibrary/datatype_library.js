@@ -405,25 +405,87 @@ B64         ::=  [A-Za-z0-9+/]
     datatypeEqual ("",  "token") s1 _ s2 _ = (normalizeWhitespace s1) == (normalizeWhitespace s2)
     */
     this.datatypeEqual = function(datatype, patternString, patternContext, string, context) {
-        if (datatype.uri == "") {
-            if (datatype.localName == "string") {
-                return string1 == string2;
-            } else if (datatype.localName == "token") {
-                return this.normalizeWhitespace(string1) == this.normalizeWhitespace(string2);
+        if (datatype.uri == "http://www.w3.org/2001/XMLSchema-datatypes") {
+            if (datatype.localName == "boolean") {
+                var value = this.whitespace(string, COLLAPSE);
+                var patternValue = this.whitespace(patternString, COLLAPSE);
+                if (value.toLowerCase() == patternValue.toLowerCase()) {
+                    return new Empty();
+                } else {
+                    return new NotAllowed("invalid value, expected is " + patternValue, datatype, string);
+                }
+                
+            } else if (datatype.localName == "float" || datatype.localName == "double" || datatype.localName == "decimal") {
+                var value = parseFloat(string);
+                var patternValue = parseFloat(patternString);
+                if (value == patternValue) {
+                    return new Empty();
+                } else {
+                    return new NotAllowed("invalid value, expected is " + patternValue, datatype, string);
+                }
+                
+            } else if (datatype.localName == "integer" || datatype.localName == "long" || datatype.localName == "int" || datatype.localName == "short" || datatype.localName == "byte" || datatype.localName == "negativeInteger" || datatype.localName == "nonPositiveInteger" || datatype.localName == "nonNegativeInteger" || datatype.localName == "positiveInteger" || datatype.localName == "unsignedLong" || datatype.localName == "unsignedInt" || datatype.localName == "unsignedShort" || datatype.localName == "unsignedByte") {
+                var value = parseInt(string);
+                var patternValue = parseInt(patternString);
+                if (value == patternValue) {
+                    return new Empty();
+                } else {
+                    return new NotAllowed("invalid value, expected is " + patternValue, datatype, string);
+                }
+                
+            } else if (datatype.localName == "anyURI" || datatype.localName == "QName" || datatype.localName == "NOTATION") {
+                var value = this.whitespace(string, COLLAPSE);
+                var patternValue = this.whitespace(patternString, COLLAPSE);
+                if (value == patternValue) {
+                    return new Empty();
+                } else {
+                    return new NotAllowed("invalid value, expected is " + patternValue, datatype, string);
+                }
+                
+            } else if (datatype.localName == "string" || datatype.localName == "normalizedString" || datatype.localName == "token" || datatype.localName == "language" || datatype.localName == "Name" || datatype.localName == "NCName") {
+                var value = this.whitespace(string, PRESERVE);
+                var patternValue = this.whitespace(patternString, PRESERVE);
+                if (value == patternValue) {
+                    return new Empty();
+                } else {
+                    return new NotAllowed("invalid value, expected is " + patternValue, datatype, string);
+                }
+                
+            } else if (datatype.localName == "base64Binary") {
+                var value = string.replace(/ /g, "");
+                var patternValue = patternString.replace(/ /g, "");
+                if (value == patternValue) {
+                    return new Empty();
+                } else {
+                    return new NotAllowed("invalid value, expected is " + patternValue, datatype, string);
+                }
+                
+            } else if (datatype.localName == "hexBinary") {
+                var value = this.whitespace(string, COLLAPSE);
+                var patternValue = this.whitespace(patternString, COLLAPSE);
+                //canonical representation of hexBinary prohibites lower case
+                if (value.toUpperCase() == patternValue.toUpperCase()) {
+                    return new Empty();
+                } else {
+                    return new NotAllowed("invalid value, expected is " + patternValue, datatype, string);
+                }
+                
+            } else {
+                return new Empty();
             }
-        } else if (!datatypeLibrary) {
-            return true;
         } else {
-            return datatypeLibrary.datatypeEqual(datatype, string1, context1, string2, context2);
+            return new Empty();
         }
     };
     
     this.whitespace = function(string, wsDefault, paramList) {
         var wsParam = wsDefault;
-        for (var i in paramList) {
-            var param = paramList[i];
-            if (param.localName == "whiteSpace") {
-                wsParam = param.string;
+        if (paramList) {
+            for (var i in paramList) {
+                var param = paramList[i];
+                if (param.localName == "whiteSpace") {
+                    wsParam = param.string;
+                }
             }
         }
         if (wsParam == REPLACE) {
