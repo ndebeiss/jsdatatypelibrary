@@ -107,34 +107,34 @@ data AttributeNode = AttributeNode QName String
 */
 
 function Param(localName, string) {
-	this.localName = localName;
-	this.string = string;
-	this.toString = function() {
-		return "<table><tr><th>Param</th></tr><tr><td>localName</td><td>" + this.localName + "</td></tr><tr><td>string</td><td>" + this.string + "</td></tr></table>";
-	}
+    this.localName = localName;
+    this.string = string;
+    this.toString = function() {
+        return "<table><tr><th>Param</th></tr><tr><td>localName</td><td>" + this.localName + "</td></tr><tr><td>string</td><td>" + this.string + "</td></tr></table>";
+    }
 }
 
 /*
 map is an array of [(Prefix, Uri)] mappings
 */
 function Context(uri, map) {
-	this.uri = uri;
-	this.map = map;
-	this.toString = function() {
-		var string = "<table><tr><th>Context</th></tr><tr><td>uri</td><td>" + this.uri + "</td></tr><tr><td><table><tr><th>map</th></tr>";
-		for (var i in this.map) {
-			string += "<tr><td>" + i + "</td><td>" + this.map[i] + "</td></tr>";
-		}
-		return string + "</table></td></tr></table>";
-	}
+    this.uri = uri;
+    this.map = map;
+    this.toString = function() {
+        var string = "<table><tr><th>Context</th></tr><tr><td>uri</td><td>" + this.uri + "</td></tr><tr><td><table><tr><th>map</th></tr>";
+        for (var i in this.map) {
+            string += "<tr><td>" + i + "</td><td>" + this.map[i] + "</td></tr>";
+        }
+        return string + "</table></td></tr></table>";
+    }
 }
 
 function Datatype(uri, localName) {
-	this.uri = uri;
-	this.localName = localName;
-	this.toString = function() {
-		return "<table><tr><th>Datatype</th></tr><tr><td>uri</td><td>" + this.uri + "</td></tr><tr><td>localName</td><td>" + this.localName + "</td></tr></table>";
-	}
+    this.uri = uri;
+    this.localName = localName;
+    this.toString = function() {
+        return "<table><tr><th>Datatype</th></tr><tr><td>uri</td><td>" + this.uri + "</td></tr><tr><td>localName</td><td>" + this.localName + "</td></tr></table>";
+    }
 }
 
 /*
@@ -146,42 +146,42 @@ data NameClass = AnyName
                  | NameClassChoice NameClass NameClass
 */
 function AnyName() {
-	this.toString = function() {
-		return "<table><tr><th>AnyName</th></tr></table>";
-	}
+    this.toString = function() {
+        return "<table><tr><th>AnyName</th></tr></table>";
+    }
 }
 function AnyNameExcept(nameClass) {
-	this.nameClass = nameClass;
-	this.toString = function() {
-		return "<table><tr><th>AnyNameExcept</th></tr><tr><td>" + this.nameClass.toString() + "</td></tr></table>";
-	}
+    this.nameClass = nameClass;
+    this.toString = function() {
+        return "<table><tr><th>AnyNameExcept</th></tr><tr><td>" + this.nameClass.toString() + "</td></tr></table>";
+    }
 }
 function Name(uri, localName) {
-	this.uri = uri;
-	this.localName = localName;
-	this.toString = function() {
-		return "<table><tr><th>Name</th></tr><tr><td>uri</td><td>" + this.uri + "</td></tr><tr><td>localName</td><td>" + this.localName + "</td></tr></table>";
-	}
+    this.uri = uri;
+    this.localName = localName;
+    this.toString = function() {
+        return "<table><tr><th>Name</th></tr><tr><td>uri</td><td>" + this.uri + "</td></tr><tr><td>localName</td><td>" + this.localName + "</td></tr></table>";
+    }
 }
 function NsName(uri) {
-	this.uri = uri;
-	this.toString = function() {
-		return "<table><tr><th>NsName</th></tr><tr><td>uri</td><td>" + this.uri + "</td></tr></table>";
-	}
+    this.uri = uri;
+    this.toString = function() {
+        return "<table><tr><th>NsName</th></tr><tr><td>uri</td><td>" + this.uri + "</td></tr></table>";
+    }
 }
 function NsNameExcept(uri, nameClass) {
-	this.uri = uri;
-	this.nameClass = nameClass;
-	this.toString = function() {
-		return "<table><tr><th>NsNameExcept</th></tr><tr><td>uri</td><td>" + this.uri + "</td></tr><tr><td>nameClass</td><td>" + this.nameClass.toString() + "</td></tr></table>";
-	}
+    this.uri = uri;
+    this.nameClass = nameClass;
+    this.toString = function() {
+        return "<table><tr><th>NsNameExcept</th></tr><tr><td>uri</td><td>" + this.uri + "</td></tr><tr><td>nameClass</td><td>" + this.nameClass.toString() + "</td></tr></table>";
+    }
 }
 function NameClassChoice(nameClass1, nameClass2) {
-	this.nameClass1 = nameClass1;
-	this.nameClass2 = nameClass2;
-	this.toString = function() {
-		return "<table><tr><th>NameClassChoice</th></tr><tr><td>nameClass1</td><td>" + this.nameClass1.toString() + "</td></tr><tr><td>nameClass2</td><td>" + this.nameClass2.toString() + "</td></tr></table>";
-	}
+    this.nameClass1 = nameClass1;
+    this.nameClass2 = nameClass2;
+    this.toString = function() {
+        return "<table><tr><th>NameClassChoice</th></tr><tr><td>nameClass1</td><td>" + this.nameClass1.toString() + "</td></tr><tr><td>nameClass2</td><td>" + this.nameClass2.toString() + "</td></tr></table>";
+    }
 }
 
 
@@ -202,109 +202,117 @@ data Pattern = Empty
                | After Pattern Pattern
 */
 function Empty() {
-	this.toString = function() {
-		return "<table><tr><th>Empty</th></tr></table>";
-	}
+    this.toString = function() {
+        return "<table><tr><th>Empty</th></tr></table>";
+    }
 }
 function NotAllowed(message, pattern, childNode) {
-	this.message = message;
-	this.pattern = pattern;
-	this.childNode = childNode;
-	this.toString = function() {
-		return "<table><tr><th>NotAllowed</th></tr><tr><td>message</td><td>" + this.message + "</td></tr><tr><td>pattern</td><td>" + this.pattern.toString() + "</td></tr><tr><td>childNode</td><td>" + this.childNode.toString() + "</td></tr></table>";
-	}
+    this.message = message;
+    this.pattern = pattern;
+    this.childNode = childNode;
+    this.toString = function() {
+        return "<table><tr><th>NotAllowed</th></tr><tr><td>message</td><td>" + this.message + "</td></tr><tr><td>pattern</td><td>" + this.pattern.toString() + "</td></tr><tr><td>childNode</td><td>" + this.childNode.toString() + "</td></tr></table>";
+    }
 }
 function Text() {
-	this.toString = function() {
-		return "<table><tr><th>Text</th></tr></table>";
-	}
+    this.toString = function() {
+        return "<table><tr><th>Text</th></tr></table>";
+    }
 }
 function Choice(pattern1, pattern2) {
-	this.pattern1 = pattern1;
-	this.pattern2 = pattern2;
-	this.toString = function() {
-		return "<table><tr><th>Choice</th></tr><tr><td>pattern1</td><td>" + this.pattern1.toString() + "</td></tr><tr><td>pattern2</td><td>" + this.pattern2.toString() + "</td></tr></table>";
-	}
+    this.pattern1 = pattern1;
+    this.pattern2 = pattern2;
+    this.toString = function() {
+        return "<table><tr><th>Choice</th></tr><tr><td>pattern1</td><td>" + this.pattern1.toString() + "</td></tr><tr><td>pattern2</td><td>" + this.pattern2.toString() + "</td></tr></table>";
+    }
 }
 function Interleave(pattern1, pattern2) {
-	this.pattern1 = pattern1;
-	this.pattern2 = pattern2;
-	this.toString = function() {
-		return "<table><tr><th>Interleave</th></tr><tr><td>pattern1</td><td>" + this.pattern1.toString() + "</td></tr><tr><td>pattern2</td><td>" + this.pattern2.toString() + "</td></tr></table>";
-	}
+    this.pattern1 = pattern1;
+    this.pattern2 = pattern2;
+    this.toString = function() {
+        return "<table><tr><th>Interleave</th></tr><tr><td>pattern1</td><td>" + this.pattern1.toString() + "</td></tr><tr><td>pattern2</td><td>" + this.pattern2.toString() + "</td></tr></table>";
+    }
 }
 function Group(pattern1, pattern2) {
-	this.pattern1 = pattern1;
-	this.pattern2 = pattern2;
-	this.toString = function() {
-		return "<table><tr><th>Group</th></tr><tr><td>pattern1</td><td>" + this.pattern1.toString() + "</td></tr><tr><td>pattern2</td><td>" + this.pattern2.toString() + "</td></tr></table>";
-	}
+    this.pattern1 = pattern1;
+    this.pattern2 = pattern2;
+    this.toString = function() {
+        return "<table><tr><th>Group</th></tr><tr><td>pattern1</td><td>" + this.pattern1.toString() + "</td></tr><tr><td>pattern2</td><td>" + this.pattern2.toString() + "</td></tr></table>";
+    }
 }
 function OneOrMore(pattern) {
-	this.pattern = pattern;
-	this.toString = function() {
-		return "<table><tr><th>OneOrMore</th></tr><tr><td>pattern</td><td>" + this.pattern.toString() + "</td></tr></table>";
-	}
+    this.pattern = pattern;
+    this.toString = function() {
+        return "<table><tr><th>OneOrMore</th></tr><tr><td>pattern</td><td>" + this.pattern.toString() + "</td></tr></table>";
+    }
 }
 function List(pattern) {
-	this.pattern = pattern;
-	this.toString = function() {
-		return "<table><tr><th>List</th></tr><tr><td>pattern</td><td>" + this.pattern.toString() + "</td></tr></table>";
-	}
+    this.pattern = pattern;
+    this.toString = function() {
+        return "<table><tr><th>List</th></tr><tr><td>pattern</td><td>" + this.pattern.toString() + "</td></tr></table>";
+    }
 }
 function Data(datatype, paramList) {
-	this.datatype = datatype;
-	this.paramList = paramList;
-	this.toString = function() {
-		return "<table><tr><th>Data</th></tr><tr><td>datatype</td><td>" + this.datatype.toString() + "</td></tr><tr><td>paramList</td><td>" + this.paramList.toString() + "</td></tr></table>";
-	}
+    this.datatype = datatype;
+    this.paramList = paramList;
+    this.toString = function() {
+        var string = "<table><tr><th>Data</th></tr><tr><td>datatype</td><td>" + this.datatype.toString() + "</td></tr><tr><td><table><tr><th>paramList</th></tr>";
+        for (var i = 0 ; i < this.paramList.length ; i++) {
+            string += "<tr><td>" + this.paramList[i].toString() + "</td></tr>";
+        }
+        return string + "</table></td></tr></table>";
+    }
 }
 function DataExcept(datatype, paramList, pattern) {
-	this.datatype = datatype;
-	this.paramList = paramList;
-	this.pattern = pattern;
-	this.toString = function() {
-		return "<table><tr><th>Data</th></tr><tr><td>datatype</td><td>" + this.datatype.toString() + "</td></tr><tr><td>paramList</td><td>" + this.paramList.toString() + "</td></tr><tr><td>pattern</td><td>" + this.pattern.toString() + "</td></tr></table>";
-	}
+    this.datatype = datatype;
+    this.paramList = paramList;
+    this.pattern = pattern;
+    this.toString = function() {
+        var string = "<table><tr><th>DataExcept</th></tr><tr><td>datatype</td><td>" + this.datatype.toString() + "</td></tr><tr><td><table><tr><th>paramList</th></tr>";
+        for (var i = 0 ; i < this.paramList.length ; i++) {
+            string += "<tr><td>" + this.paramList[i].toString() + "</td></tr>";
+        }
+        return string + "</table></td></tr><tr><td>pattern</td><td>" + this.pattern.toString() + "</td></tr></table>";
+    }
 }
 function Value(datatype, string, context) {
-	this.datatype = datatype;
-	this.string = string;
-	this.context = context;
-	this.toString = function() {
-		return "<table><tr><th>Data</th></tr><tr><td>datatype</td><td>" + this.datatype.toString() + "</td></tr><tr><td>string</td><td>" + this.string + "</td></tr><tr><td>context</td><td>" + this.context.toString() + "</td></tr></table>";
-	}
+    this.datatype = datatype;
+    this.string = string;
+    this.context = context;
+    this.toString = function() {
+        return "<table><tr><th>Value</th></tr><tr><td>datatype</td><td>" + this.datatype.toString() + "</td></tr><tr><td>string</td><td>" + this.string + "</td></tr><tr><td>context</td><td>" + this.context.toString() + "</td></tr></table>";
+    }
 }
 function Attribute(nameClass, pattern) {
-	this.nameClass = nameClass;
-	this.pattern = pattern;
-	this.toString = function() {
-		return "<table><tr><th>Attribute</th></tr><tr><td>nameClass</td><td>" + this.nameClass.toString() + "</td></tr><tr><td>pattern</td><td>" + this.pattern.toString() + "</td></tr></table>";
-	}
+    this.nameClass = nameClass;
+    this.pattern = pattern;
+    this.toString = function() {
+        return "<table><tr><th>Attribute</th></tr><tr><td>nameClass</td><td>" + this.nameClass.toString() + "</td></tr><tr><td>pattern</td><td>" + this.pattern.toString() + "</td></tr></table>";
+    }
 }
 function Element(nameClass, pattern) {
-	this.nameClass = nameClass;
-	this.pattern = pattern;
-	this.toString = function() {
-		return "<table><tr><th>Element</th></tr><tr><td>nameClass</td><td>" + this.nameClass.toString() + "</td></tr><tr><td>pattern</td><td>" + this.pattern.toString() + "</td></tr></table>";
-	}
+    this.nameClass = nameClass;
+    this.pattern = pattern;
+    this.toString = function() {
+        return "<table><tr><th>Element</th></tr><tr><td>nameClass</td><td>" + this.nameClass.toString() + "</td></tr><tr><td>pattern</td><td>" + this.pattern.toString() + "</td></tr></table>";
+    }
 }
 function After(pattern1, pattern2) {
-	this.pattern1 = pattern1;
-	this.pattern2 = pattern2;
-	this.toString = function() {
-		return "<table><tr><th>After</th></tr><tr><td>pattern1</td><td>" + this.pattern1.toString() + "</td></tr><tr><td>pattern2</td><td>" + this.pattern2.toString() + "</td></tr></table>";
-	}
+    this.pattern1 = pattern1;
+    this.pattern2 = pattern2;
+    this.toString = function() {
+        return "<table><tr><th>After</th></tr><tr><td>pattern1</td><td>" + this.pattern1.toString() + "</td></tr><tr><td>pattern2</td><td>" + this.pattern2.toString() + "</td></tr></table>";
+    }
 }
 
 
 
 function QName(uri, localName) {
-	this.uri = uri;
-	this.localName = localName;
-	this.toString = function() {
-		return "<table><tr><th>QName</th></tr><tr><td>uri</td><td>" + this.uri + "</td></tr><tr><td>localName</td><td>" + this.localName + "</td></tr></table>";
-	}
+    this.uri = uri;
+    this.localName = localName;
+    this.toString = function() {
+        return "<table><tr><th>QName</th></tr><tr><td>uri</td><td>" + this.uri + "</td></tr><tr><td>localName</td><td>" + this.localName + "</td></tr></table>";
+    }
 }
 
 /*
@@ -312,40 +320,40 @@ data ChildNode = ElementNode QName Context [AttributeNode] [ChildNode]
                  | TextNode String
 */
 function ElementNode(qName, context, attributeNodes, childNodes) {
-	this.qName = qName;
-	this.context = context;
-	this.attributeNodes = attributeNodes;
-	this.childNodes = childNodes;
-	this.setParentNode = function(parentNode) {
-		this.parentNode = parentNode;
-	}
-	this.toString = function() {
-		var string = "<table><tr><th>ElementNode</th></tr><tr><td>qName</td><td>" + this.qName.toString() + "</td></tr><tr><td>context</td><td>" + this.context.toString() + "</td></tr><tr><td>attributeNodes</td><td><table>";
-		for (var i in this.attributeNodes) {
-			string += "<tr><td>" + this.attributeNodes[i].toString() + "</td></tr>";
-		}
-		string += "</table></td></tr><tr><td>childNodes</td><td><table>";
-		for (var i in this.childNodes) {
-			string += "<tr><td>" + this.childNodes[i].toString() + "</td></tr>";
-		}
-		string += "</table>";
-		if (this.parentNode) {
-			string += "</td></tr><tr><td>parentNode</td><td>" + this.parentNode.qName.localName;
-		}
-		return string + "</td></tr></table>";
-	}
+    this.qName = qName;
+    this.context = context;
+    this.attributeNodes = attributeNodes;
+    this.childNodes = childNodes;
+    this.setParentNode = function(parentNode) {
+        this.parentNode = parentNode;
+    }
+    this.toString = function() {
+        var string = "<table><tr><th>ElementNode</th></tr><tr><td>qName</td><td>" + this.qName.toString() + "</td></tr><tr><td>context</td><td>" + this.context.toString() + "</td></tr><tr><td>attributeNodes</td><td><table>";
+        for (var i in this.attributeNodes) {
+            string += "<tr><td>" + this.attributeNodes[i].toString() + "</td></tr>";
+        }
+        string += "</table></td></tr><tr><td>childNodes</td><td><table>";
+        for (var i in this.childNodes) {
+            string += "<tr><td>" + this.childNodes[i].toString() + "</td></tr>";
+        }
+        string += "</table>";
+        if (this.parentNode) {
+            string += "</td></tr><tr><td>parentNode</td><td>" + this.parentNode.qName.localName;
+        }
+        return string + "</td></tr></table>";
+    }
 }
 function TextNode(string) {
-	this.string = string;
-	this.toString = function() {
-		return "<table><tr><th>TextNode</th></tr><tr><td>string</td><td>" + this.string + "</td></tr></table>";
-	}
+    this.string = string;
+    this.toString = function() {
+        return "<table><tr><th>TextNode</th></tr><tr><td>string</td><td>" + this.string + "</td></tr></table>";
+    }
 }
 
 function AttributeNode(qName, string) {
-	this.qName = qName;
-	this.string = string;
-	this.toString = function() {
-		return "<table><tr><th>AttributeNode</th></tr><tr><td>qName</td><td>" + this.qName.toString() + "</td></tr><tr><td>string</td><td>" + this.string + "</td></tr></table>";
-	}
+    this.qName = qName;
+    this.string = string;
+    this.toString = function() {
+        return "<table><tr><th>AttributeNode</th></tr><tr><td>qName</td><td>" + this.qName.toString() + "</td></tr><tr><td>string</td><td>" + this.string + "</td></tr></table>";
+    }
 }
