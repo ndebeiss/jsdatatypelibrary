@@ -3,10 +3,8 @@
     <script language="JavaScript" src="../jsunit/app/jsUnitCore.js"></script>
 	<script language="JavaScript" src="../jsdatatypelibrary/datatype_library.js"></script>
 	<script language="JavaScript" src="../jsdatatypelibrary/validator_objects.js"></script>
-	<script language="JavaScript" src="../jsdatatypelibrary/dom_utils.js"></script>
-    <script language="JavaScript" src="../jsdatatypelibrary/applyXslt.js"></script>
-    <script language="JavaScript" src="../jsdatatypelibrary/extras.js"></script>
-    <script language="JavaScript" src="../jsdatatypelibrary/manageWhiteSpace.js"></script>
+    <script language="JavaScript" src="dom_utils.js"></script>
+    <script language="JavaScript" src="applyXslt.js"></script>
     <script language="JavaScript">
     var datatypeLibrary = new DatatypeLibrary();
 
@@ -229,7 +227,55 @@
         }
     }
     
+    function runAllTests () {
+        setUp();
+        testDatatypeAllows_language();
+        setUp();
+        testDatatypeAllows_language_false();
+        setUp();
+        testDatatypeAllows_Name();
+        setUp();
+        testDatatypeAllows_Name_false();
+        setUp();
+        testDatatypeAllows_NCName();
+        setUp();
+        testDatatypeAllows_NCName_false();
+        setUp();
+        testDatatypeAllows_normalizedString();
+        setUp();
+        testDatatypeAllows_QName();
+        setUp();
+        testDatatypeAllows_QName_false();
+        setUp();
+        testDatatypeAllows_token();
+        setUp();
+        testDatatypeAllows_enumeration();
+        setUp();
+        testDatatypeAllows_fractionDigits();
+        setUp();
+        testDatatypeAllows_length();
+        setUp();
+        testDatatypeAllows_maxExclusive();
+        setUp();
+        testDatatypeAllows_maxLength();
+        setUp();
+        testDatatypeAllows_minInclusive();
+        setUp();
+        testDatatypeAllows_pattern();
+        setUp();
+        testDatatypeAllows_totalDigits();
+        setUp();
+        testDatatypeAllows_from_jing_trang();
+        alert('done!');
+    }
+    
+    // Brett added to be able to show something in console when error is thrown
+    JsUnitException.prototype.toString = function () {
+        return this.jsUnitMessage;
+    };
 
+    runAllTests();
+    
     </script>
   </head>
   <body>
