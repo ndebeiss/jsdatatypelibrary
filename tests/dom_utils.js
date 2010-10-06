@@ -183,29 +183,31 @@ function getElementByTagClassRefs(parentNode, tagName, classValue, refsValue) {
  comes from http://www.w3schools.com/dom/tryit.asp?filename=note_parsertest2
  */
 function createDocumentFromText(text) {
+    var doc;
     // code for IE
     if (window.ActiveXObject) {
-        var doc=new ActiveXObject("Microsoft.XMLDOM");
+        doc=new ActiveXObject("Microsoft.XMLDOM");
         doc.async="false";
         doc.loadXML(text);
     }
     // code for Mozilla, Firefox, Opera, etc.
     else {
         var parser=new DOMParser();
-        var doc=parser.parseFromString(text,"text/xml");
+        doc=parser.parseFromString(text,"text/xml");
     }
     return doc;
 }
 
 function createDocument() {
+    var doc;
     // code for IE
     if (window.ActiveXObject) {
-        var doc=new ActiveXObject("Microsoft.XMLDOM");
+        doc=new ActiveXObject("Microsoft.XMLDOM");
         doc.async="false";
     }
     // code for Mozilla, Firefox
     else {
-        var doc = document.implementation.createDocument("", "", null);
+        doc = document.implementation.createDocument("", "", null);
     }
     return doc;
 }
@@ -299,16 +301,15 @@ function insertAfter(node, ref) {
 function innerXML(node) {
     if (node.innerXML) {
         return node.innerXML;
-    } else {
-        if (node.xml) {
-            return node.xml;
-        } else {
-            if (typeof XMLSerializer != "undefined") {
-                var serializer = new XMLSerializer();
-                return serializer.serializeToString(node);
-            }
-        }
     }
+    if (node.xml) {
+        return node.xml;
+    }
+    if (typeof window.XMLSerializer != "undefined") {
+        var serializer = new XMLSerializer();
+        return serializer.serializeToString(node);
+    }
+    throw "XML serialization is presently not supported";
 }
 
 function removePrefix(nodeName) {
