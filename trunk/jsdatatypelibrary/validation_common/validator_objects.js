@@ -445,7 +445,7 @@ ElementNode.prototype.toHTML = function() {
         string += "<tr><td>" + this.attributeNodes[i].toHTML() + "</td></tr>";
     }
     string += "</table></td></tr><tr><td>childNodes</td><td><table>";
-    for (var i in this.childNodes) {
+    for (i in this.childNodes) {
         string += "<tr><td>" + this.childNodes[i].toHTML() + "</td></tr>";
     }
     string += "</table>";

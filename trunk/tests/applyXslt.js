@@ -75,13 +75,13 @@ function loadFile(fname) {
 		if (xmlhttp.readyState == 4) {
 			return xmlhttp.responseText;
 		}
-	} else {
-		alert("Your browser does not support XMLHTTP.");
 	}
+    throw "Your browser does not support XMLHTTP.";
 }
 
 function applyXslt(xml, xsl, asFragment, paramMap) {
-    // code for IE 
+    // code for IE
+    var i;
     if (window.ActiveXObject) {
         var xslt = new ActiveXObject("Msxml2.XSLTemplate.3.0" );
 		var xslDoc = new ActiveXObject("Msxml2.FreeThreadedDOMDocument.3.0" );
@@ -91,7 +91,7 @@ function applyXslt(xml, xsl, asFragment, paramMap) {
 		var xslProc = xslt.createProcessor();
 		xslProc.input = xml;
 		if (paramMap) {
-			for (var i in paramMap) {
+			for (i in paramMap) {
 				xsltProcessor.addParameter(i, paramMap[i]);
 			}
 		}
@@ -100,11 +100,11 @@ function applyXslt(xml, xsl, asFragment, paramMap) {
     }
     // code for Mozilla, Firefox, Opera, etc.
     else if (document.implementation && document.implementation.createDocument) {
-		var xsl = loadXMLDoc(xsl);
+		xsl = loadXMLDoc(xsl);
         var xsltProcessor = new XSLTProcessor();
         xsltProcessor.importStylesheet(xsl);
 		if (paramMap) {
-			for (var i in paramMap) {
+			for (i in paramMap) {
 				xsltProcessor.setParameter(null, i, paramMap[i]);
 			}
 		}
@@ -116,10 +116,11 @@ function applyXslt(xml, xsl, asFragment, paramMap) {
 		}
         return resultDocument;
     }
+    throw "XSLT is not supported in this browser.";
 }
 
 function applyXsltOnText(xml, xsl) {
-    var xml = createDocumentFromText(xml);
+    xml = createDocumentFromText(xml);
 	var result = applyXslt(xml, xsl);
     return innerXML(result);
 }
