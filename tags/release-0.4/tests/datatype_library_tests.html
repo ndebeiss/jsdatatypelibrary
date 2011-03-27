@@ -1,0 +1,299 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <script type="text/javascript" src="../jsunit/app/jsUnitCore.js"></script>
+    <script type="text/javascript" src="../jsdatatypelibrary/datatype_library.js"></script>
+    <script type="text/javascript" src="../jsdatatypelibrary/validation_common/validator_objects.js"></script>
+    <script type="text/javascript" src="../jsdatatypelibrary/validation_common/dom_utils.js"></script>
+    <script type="text/javascript" src="applyXslt.js"></script>
+    <script type="text/javascript">
+    var datatypeLibrary = new DatatypeLibrary();
+
+    var uri = "http://www.w3.org/2001/XMLSchema-datatypes";
+    var paramList;
+    var map;
+    var context;
+    
+    function Tracer() {
+    }
+
+    Tracer.prototype.debug = function(msg) {
+        //document.getElementById("msg").innerHTML += "debug : " + msg;
+    }
+
+    Tracer.prototype.inform = function(msg) {
+        document.getElementById("msg").innerHTML += "<div>inform : " + msg + "</div>";
+    }
+
+    function setUp() {
+        paramList = new Array();
+        map = new Array();
+        context = new Context(uri, map);
+        if (top) {
+            top.tracer = new Tracer();
+        }
+    }
+    
+    function testDatatypeAllows_language() {
+        datatypeAllows_true("language", "GB");
+    }
+    function testDatatypeAllows_language_false() {
+        datatypeAllows_false("language", "1GE");
+    }
+    
+    function testDatatypeAllows_Name() {
+        datatypeAllows_true("Name", "markup_name");
+    }
+    function testDatatypeAllows_Name_false() {
+        datatypeAllows_false("Name", "ma$rkup_name:");
+    }
+    
+    function testDatatypeAllows_NCName() {
+        datatypeAllows_true("NCName", "markup_name");
+    }
+    function testDatatypeAllows_NCName_false() {
+        datatypeAllows_false("NCName", "sfe:markup_name");
+    }
+    
+    function testDatatypeAllows_normalizedString() {
+        datatypeAllows_true("normalizedString", "string");
+    }
+    
+    function testDatatypeAllows_QName() {
+        datatypeAllows_true("QName", "string");
+    }
+    function testDatatypeAllows_QName_false() {
+        datatypeAllows_false("QName", "str	ing ");
+    }
+    
+    function testDatatypeAllows_token() {
+        datatypeAllows_true("token", "str ing");
+        datatypeAllows_true("token", "s");
+        datatypeAllows_true("token", "");
+        datatypeAllows_true("token", "ab cd defgh");
+        datatypeAllows_false("token", " ab cd defgh");
+        datatypeAllows_false("token", " ab cd defgh ");
+        datatypeAllows_false("token", " ");
+        datatypeAllows_false("token", "  ");
+        datatypeAllows_false("token", "ab cd  defgh");
+        datatypeAllows_false("token", "a  b cddefgh");
+    }
+    
+    /*
+    tests on parameters
+    */
+    function testDatatypeAllows_enumeration() {
+        paramList.push(new Param("enumeration", "value1"));
+        paramList.push(new Param("enumeration", "value2"));
+        paramList.push(new Param("enumeration", "value3"));
+        datatypeAllows_true("string", "value1");
+        datatypeAllows_true("string", "value2");
+        datatypeAllows_true("string", "value3");
+        datatypeAllows_false("string", "  value3  ");
+        datatypeAllows_false("string", "value4");
+        datatypeAllows_false("string", " val ue3");
+        datatypeAllows_false("string", "");
+        datatypeAllows_false("string", "   ");
+    }
+    
+    function testDatatypeAllows_fractionDigits() {
+        paramList.push(new Param("fractionDigits", "3"));
+        datatypeAllows_true("decimal", "1.256");
+        datatypeAllows_true("decimal", "  0.156 ");
+        datatypeAllows_true("decimal", "1537389.156");
+        datatypeAllows_false("decimal", "2.25");
+        datatypeAllows_false("decimal", "  2.25 ");
+        datatypeAllows_false("decimal", "  ");
+        datatypeAllows_false("decimal", "123.12345678");
+    }
+    
+    function testDatatypeAllows_length() {
+        paramList.push(new Param("length", "3"));
+        paramList.push(new Param("whiteSpace", "collapse"));
+        datatypeAllows_true("string", "abc");
+        datatypeAllows_true("string", "  wer ");
+        datatypeAllows_true("string", "  dju");
+        datatypeAllows_false("string", " 2.25");
+        datatypeAllows_false("string", "   abcd  ");
+        datatypeAllows_false("string", "abcdef");
+        datatypeAllows_false("string", "    ");
+        datatypeAllows_false("string", " ab");
+    }
+    
+    function testDatatypeAllows_maxExclusive() {
+        paramList.push(new Param("maxExclusive", "3.12"));
+        datatypeAllows_true("decimal", "3.11");
+        datatypeAllows_true("decimal", "  2 ");
+        datatypeAllows_true("decimal", "  1.5    ");
+        datatypeAllows_false("decimal", "4.56");
+        datatypeAllows_false("decimal", "   7 ");
+        datatypeAllows_false("decimal", "6.11111");
+        datatypeAllows_false("decimal", "  3.12 ");
+    }
+    
+    function testDatatypeAllows_maxLength() {
+        paramList.push(new Param("maxLength", "4"));
+        paramList.push(new Param("whiteSpace", "collapse"));
+        datatypeAllows_true("string", "abc");
+        datatypeAllows_true("string", "  we ");
+        datatypeAllows_true("string", "    ");
+        datatypeAllows_true("string", "  abcd  ");
+        datatypeAllows_false("string", " abcdef");
+        datatypeAllows_false("string", "   abscsecasc  ");
+    }
+    
+    function testDatatypeAllows_minInclusive() {
+        paramList.push(new Param("minInclusive", "-2.5"));
+        datatypeAllows_true("decimal", "-2.2");
+        datatypeAllows_true("decimal", "  0 ");
+        datatypeAllows_true("decimal", "   +2.56 ");
+        datatypeAllows_true("decimal", "156  ");
+        datatypeAllows_true("decimal", "-2.5");
+        datatypeAllows_false("decimal", " abcdef");
+        datatypeAllows_false("decimal", "  -11.0  ");
+        datatypeAllows_false("decimal", "-25  ");
+    }
+    
+    function testDatatypeAllows_pattern() {
+        paramList.push(new Param("pattern", "[abcd]+"));
+        paramList.push(new Param("whiteSpace", "collapse"));
+        datatypeAllows_true("string", "bacad");
+        datatypeAllows_true("string", "  cccc");
+        datatypeAllows_true("string", "   addda ");
+        datatypeAllows_false("string", " abcde");
+        datatypeAllows_false("string", "eee  ");
+    }
+    
+    function testDatatypeAllows_totalDigits() {
+        paramList.push(new Param("totalDigits", "4"));
+        datatypeAllows_true("decimal", "0.123");
+        datatypeAllows_true("integer", "  1234");
+        datatypeAllows_true("double", "   12.35 ");
+        datatypeAllows_false("integer", " 12345");
+        datatypeAllows_false("double", "123  ");
+    }
+    
+    function datatypeAllows_true(localname, string) {
+        var datatype = new Datatype(uri, localname);
+        debug("testDatatypeAllows localname [" + localname + "] string [" + string + "]");
+        inform("testing localname [" + localname + "] with string [" + string + "]");
+        var resultPattern = datatypeLibrary.datatypeAllows(datatype, paramList, string, context);
+        assertTrue("localname [" + localname + "] string [" + string + "] result pattern [" + resultPattern + "]", resultPattern instanceof Empty);
+    }
+    
+    function datatypeAllows_false(localname, string) {
+        var datatype = new Datatype(uri, localname);
+        debug("testDatatypeAllows localname [" + localname + "] string [" + string + "]");
+        inform("testing localname [" + localname + "] with string [" + string + "]");
+        var resultPattern = datatypeLibrary.datatypeAllows(datatype, paramList, string, context);
+        assertTrue("localname [" + localname + "] string [" + string + "] result pattern [" + resultPattern + "]", resultPattern instanceof NotAllowed);
+    }
+    
+    function testDatatypeAllows_from_jing_trang() {
+        var xml_tests = createDocumentFromText(loadFile("from_jing-trang/xsdtest.xml"));
+        var datatypeNodes = xml_tests.getElementsByTagName("datatype");
+        for (var i = 0 ; i < datatypeNodes.length ; i++) {
+            var datatypeNode = datatypeNodes.item(i);
+            var name = datatypeNode.getAttribute("name");
+            var validNodes = datatypeNode.getElementsByTagName("valid");
+            for (var j = 0 ; j < validNodes.length ; j++) {
+                var validNode = validNodes.item(j);
+                map = new Array();
+                context = new Context(uri, map);
+                setNamespacesDecl(validNode);
+                var value = textContent(validNode);
+                datatypeAllows_true(name, value);
+            }
+            var valueNodes = datatypeNode.getElementsByTagName("value");
+            for (var j = 0 ; j < valueNodes.length ; j++) {
+                var valueNode = valueNodes.item(j);
+                map = new Array();
+                context = new Context(uri, map);
+                setNamespacesDecl(valueNode);
+                var value = textContent(valueNode);
+                datatypeAllows_true(name, value);
+            }
+            var inValidNodes = datatypeNode.getElementsByTagName("invalid");
+            for (var j = 0 ; j < inValidNodes.length ; j++) {
+                var inValidNode = inValidNodes.item(j);
+                map = new Array();
+                context = new Context(uri, map);
+                setNamespacesDecl(inValidNode);
+                var value = textContent(inValidNode);
+                datatypeAllows_false(name, value);
+            }
+        }
+    }
+    
+    function setNamespacesDecl(node) {
+        if (node.nodeType == 1) {
+            var nodeAtts = node.attributes;
+            for (var i = 0 ; i < nodeAtts.length ; i++) {
+                var nodeAtt = nodeAtts.item(i);
+                if (nodeAtt.nodeName.match('xmlns')) {
+                    var prefix = nodeAtt.localName.replace(/^xmlns$/, "");
+                    map[prefix] = nodeAtt.value;
+                }
+            }
+            var parentNode = node.parentNode;
+            if (parentNode) {
+                setNamespacesDecl(parentNode);
+            }
+        }
+    }
+    
+    function runAllTests () {
+        setUp();
+        testDatatypeAllows_language();
+        setUp();
+        testDatatypeAllows_language_false();
+        setUp();
+        testDatatypeAllows_Name();
+        setUp();
+        testDatatypeAllows_Name_false();
+        setUp();
+        testDatatypeAllows_NCName();
+        setUp();
+        testDatatypeAllows_NCName_false();
+        setUp();
+        testDatatypeAllows_normalizedString();
+        setUp();
+        testDatatypeAllows_QName();
+        setUp();
+        testDatatypeAllows_QName_false();
+        setUp();
+        testDatatypeAllows_token();
+        setUp();
+        testDatatypeAllows_enumeration();
+        setUp();
+        testDatatypeAllows_fractionDigits();
+        setUp();
+        testDatatypeAllows_length();
+        setUp();
+        testDatatypeAllows_maxExclusive();
+        setUp();
+        testDatatypeAllows_maxLength();
+        setUp();
+        testDatatypeAllows_minInclusive();
+        setUp();
+        testDatatypeAllows_pattern();
+        setUp();
+        testDatatypeAllows_totalDigits();
+        setUp();
+        testDatatypeAllows_from_jing_trang();
+        alert('done!');
+    }
+    
+    // Brett added to be able to show something in console when error is thrown
+    JsUnitException.prototype.toString = function () {
+        return this.jsUnitMessage;
+    };
+
+    //runAllTests();
+    
+    </script>
+  </head>
+  <body onload="runAllTests()">
+    This is a Test Page for datatype_library.js
+    <div id="msg"></div>
+  </body>
+</html>
