@@ -48,8 +48,9 @@ DOCUMENT_FRAGMENT_NODE = 11;
 NOTATION_NODE = 12;
 
 function cloneArray(array) {
-	var clone = new Array();
-	for (var i in array) {
+	var clone = [];
+        var i = array.length;
+        while (i--) {
 		clone[i] = array[i];
 	}
 	return clone;
@@ -183,31 +184,29 @@ function getElementByTagClassRefs(parentNode, tagName, classValue, refsValue) {
  comes from http://www.w3schools.com/dom/tryit.asp?filename=note_parsertest2
  */
 function createDocumentFromText(text) {
-    var doc;
     // code for IE
     if (window.ActiveXObject) {
-        doc=new ActiveXObject("Microsoft.XMLDOM");
+        var doc=new ActiveXObject("Microsoft.XMLDOM");
         doc.async="false";
         doc.loadXML(text);
     }
     // code for Mozilla, Firefox, Opera, etc.
     else {
         var parser=new DOMParser();
-        doc=parser.parseFromString(text,"text/xml");
+        var doc=parser.parseFromString(text,"text/xml");
     }
     return doc;
 }
 
 function createDocument() {
-    var doc;
     // code for IE
     if (window.ActiveXObject) {
-        doc=new ActiveXObject("Microsoft.XMLDOM");
+        var doc=new ActiveXObject("Microsoft.XMLDOM");
         doc.async="false";
     }
     // code for Mozilla, Firefox
     else {
-        doc = document.implementation.createDocument("", "", null);
+        var doc = document.implementation.createDocument("", "", null);
     }
     return doc;
 }
@@ -301,15 +300,16 @@ function insertAfter(node, ref) {
 function innerXML(node) {
     if (node.innerXML) {
         return node.innerXML;
+    } else {
+        if (node.xml) {
+            return node.xml;
+        } else {
+            if (typeof XMLSerializer != "undefined") {
+                var serializer = new XMLSerializer();
+                return serializer.serializeToString(node);
+            }
+        }
     }
-    if (node.xml) {
-        return node.xml;
-    }
-    if (typeof window.XMLSerializer != "undefined") {
-        var serializer = new XMLSerializer();
-        return serializer.serializeToString(node);
-    }
-    throw "XML serialization is presently not supported";
 }
 
 function removePrefix(nodeName) {
