@@ -797,12 +797,12 @@ B EEF </value> -->
 		<length value="2">fo</length>
 		<length value="1">f</length>
 	</datatype>
-    <!-- not supported
 	<datatype name="NMTOKENS">
 		<valid>foo bar</valid>
 		<invalid/>
 		<valid>1 2 3 4</valid>
 	</datatype>
+    <!-- not supported
 	<datatype name="ID">
 		<valid>foobar</valid>
 		<invalid>foo:bar</invalid>

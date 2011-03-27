@@ -1,9 +1,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <script type="text/javascript" src="../jsunit/app/jsUnitCore.js"></script>
-	<script type="text/javascript" src="../jsdatatypelibrary/datatype_library.js"></script>
-	<script type="text/javascript" src="../jsdatatypelibrary/validation_common/validator_objects.js"></script>
-    <script type="text/javascript" src="dom_utils.js"></script>
+    <script type="text/javascript" src="../jsdatatypelibrary/datatype_library.js"></script>
+    <script type="text/javascript" src="../jsdatatypelibrary/validation_common/validator_objects.js"></script>
+    <script type="text/javascript" src="../jsdatatypelibrary/validation_common/dom_utils.js"></script>
     <script type="text/javascript" src="applyXslt.js"></script>
     <script type="text/javascript">
     var datatypeLibrary = new DatatypeLibrary();
@@ -13,10 +13,24 @@
     var map;
     var context;
     
+    function Tracer() {
+    }
+
+    Tracer.prototype.debug = function(msg) {
+        //document.getElementById("msg").innerHTML += "debug : " + msg;
+    }
+
+    Tracer.prototype.inform = function(msg) {
+        document.getElementById("msg").innerHTML += "<div>inform : " + msg + "</div>";
+    }
+
     function setUp() {
         paramList = new Array();
         map = new Array();
         context = new Context(uri, map);
+        if (top) {
+            top.tracer = new Tracer();
+        }
     }
     
     function testDatatypeAllows_language() {
@@ -274,11 +288,12 @@
         return this.jsUnitMessage;
     };
 
-    runAllTests();
+    //runAllTests();
     
     </script>
   </head>
-  <body>
+  <body onload="runAllTests()">
     This is a Test Page for datatype_library.js
+    <div id="msg"></div>
   </body>
 </html>
